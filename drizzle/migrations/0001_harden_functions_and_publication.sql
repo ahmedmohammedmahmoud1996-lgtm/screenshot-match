@@ -1,0 +1,6 @@
+REVOKE EXECUTE ON FUNCTION public.has_role(uuid,public.app_role) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.make_profile() FROM PUBLIC,anon,authenticated;
+CREATE FUNCTION public.withdraw_edited_publication() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE pid uuid; sid uuid; BEGIN IF TG_TABLE_NAME='students' THEN pid=COALESCE(NEW.project_id,OLD.project_id); ELSIF TG_TABLE_NAME='slides' THEN SELECT s.project_id INTO pid FROM public.presentations p JOIN public.students s ON s.id=p.student_id WHERE p.id=COALESCE(NEW.presentation_id,OLD.presentation_id); END IF; UPDATE public.projects SET status='review',visibility='unpublished',published_data=NULL WHERE id=pid AND status='published'; RETURN COALESCE(NEW,OLD); END $$;
+REVOKE EXECUTE ON FUNCTION public.withdraw_edited_publication() FROM PUBLIC,anon,authenticated;
+CREATE TRIGGER withdraw_student_edits AFTER INSERT OR UPDATE OR DELETE ON public.students FOR EACH ROW EXECUTE FUNCTION public.withdraw_edited_publication();
+CREATE TRIGGER withdraw_slide_edits AFTER INSERT OR UPDATE OR DELETE ON public.slides FOR EACH ROW EXECUTE FUNCTION public.withdraw_edited_publication();

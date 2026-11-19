@@ -28,3 +28,12 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Use the pathless authenticated layout for administrator routes and check administrator membership in database policies and server functions; a session alone must not reveal drafts.
+- Store profile fields and roles separately; role grants are owner-provisioned, never derived from user metadata or public registration.
+- Keep student targets independent from saved slide rows and calculate actual counts from slides; changing a target never deletes content.
+- Publish a sanitized reviewed snapshot through the public project RPC, not raw private tables; content edits withdraw publication until renewed review.
+- Keep uploaded images in private storage and authorize public signed links against the current published snapshot; never sign arbitrary caller-supplied paths.
+- Use a single 1920×1080 scaled presentation canvas for previews and public decks; slide selection is URL-driven.
+- AI, bulk production, and analytics remain explicitly deferred until real implementations exist; do not simulate them.
