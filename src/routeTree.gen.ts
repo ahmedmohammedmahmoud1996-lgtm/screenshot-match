@@ -10,33 +10,252 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin_.analytics'
+import { Route as AuthenticatedAdminCreateRouteImport } from './routes/_authenticated/admin_.create'
+import { Route as AuthenticatedAdminEditorRouteImport } from './routes/_authenticated/admin_.editor'
+import { Route as AuthenticatedAdminGenerationRouteImport } from './routes/_authenticated/admin_.generation'
+import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin_.import'
+import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin_.media'
+import { Route as AuthenticatedAdminProjectsRouteImport } from './routes/_authenticated/admin_.projects'
+import { Route as AuthenticatedAdminPublishingRouteImport } from './routes/_authenticated/admin_.publishing'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin_.settings'
+import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin_.students'
+import { Route as AuthenticatedAdminThemesRouteImport } from './routes/_authenticated/admin_.themes'
+import { Route as AuthenticatedAdminProjectIdRouteImport } from './routes/_authenticated/admin_.project.$id'
+import { Route as ProjectsSlugStudentsStudentSlugRouteImport } from './routes/projects.$slug_.students.$studentSlug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminAnalyticsRoute =
+  AuthenticatedAdminAnalyticsRouteImport.update({
+    id: '/admin_/analytics',
+    path: '/admin/analytics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminCreateRoute =
+  AuthenticatedAdminCreateRouteImport.update({
+    id: '/admin_/create',
+    path: '/admin/create',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminEditorRoute =
+  AuthenticatedAdminEditorRouteImport.update({
+    id: '/admin_/editor',
+    path: '/admin/editor',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminGenerationRoute =
+  AuthenticatedAdminGenerationRouteImport.update({
+    id: '/admin_/generation',
+    path: '/admin/generation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminImportRoute =
+  AuthenticatedAdminImportRouteImport.update({
+    id: '/admin_/import',
+    path: '/admin/import',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminMediaRoute = AuthenticatedAdminMediaRouteImport.update({
+  id: '/admin_/media',
+  path: '/admin/media',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminProjectsRoute =
+  AuthenticatedAdminProjectsRouteImport.update({
+    id: '/admin_/projects',
+    path: '/admin/projects',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminPublishingRoute =
+  AuthenticatedAdminPublishingRouteImport.update({
+    id: '/admin_/publishing',
+    path: '/admin/publishing',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/admin_/settings',
+    path: '/admin/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminStudentsRoute =
+  AuthenticatedAdminStudentsRouteImport.update({
+    id: '/admin_/students',
+    path: '/admin/students',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminThemesRoute =
+  AuthenticatedAdminThemesRouteImport.update({
+    id: '/admin_/themes',
+    path: '/admin/themes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminProjectIdRoute =
+  AuthenticatedAdminProjectIdRouteImport.update({
+    id: '/admin_/project/$id',
+    path: '/admin/project/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ProjectsSlugStudentsStudentSlugRoute =
+  ProjectsSlugStudentsStudentSlugRouteImport.update({
+    id: '/projects/$slug_/students/$studentSlug',
+    path: '/projects/$slug/students/$studentSlug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/create': typeof AuthenticatedAdminCreateRoute
+  '/admin/editor': typeof AuthenticatedAdminEditorRoute
+  '/admin/generation': typeof AuthenticatedAdminGenerationRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/projects': typeof AuthenticatedAdminProjectsRoute
+  '/admin/publishing': typeof AuthenticatedAdminPublishingRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/students': typeof AuthenticatedAdminStudentsRoute
+  '/admin/themes': typeof AuthenticatedAdminThemesRoute
+  '/admin/project/$id': typeof AuthenticatedAdminProjectIdRoute
+  '/projects/$slug/students/$studentSlug': typeof ProjectsSlugStudentsStudentSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/create': typeof AuthenticatedAdminCreateRoute
+  '/admin/editor': typeof AuthenticatedAdminEditorRoute
+  '/admin/generation': typeof AuthenticatedAdminGenerationRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/projects': typeof AuthenticatedAdminProjectsRoute
+  '/admin/publishing': typeof AuthenticatedAdminPublishingRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/students': typeof AuthenticatedAdminStudentsRoute
+  '/admin/themes': typeof AuthenticatedAdminThemesRoute
+  '/admin/project/$id': typeof AuthenticatedAdminProjectIdRoute
+  '/projects/$slug/students/$studentSlug': typeof ProjectsSlugStudentsStudentSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
+  '/_authenticated/admin_/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin_/create': typeof AuthenticatedAdminCreateRoute
+  '/_authenticated/admin_/editor': typeof AuthenticatedAdminEditorRoute
+  '/_authenticated/admin_/generation': typeof AuthenticatedAdminGenerationRoute
+  '/_authenticated/admin_/import': typeof AuthenticatedAdminImportRoute
+  '/_authenticated/admin_/media': typeof AuthenticatedAdminMediaRoute
+  '/_authenticated/admin_/projects': typeof AuthenticatedAdminProjectsRoute
+  '/_authenticated/admin_/publishing': typeof AuthenticatedAdminPublishingRoute
+  '/_authenticated/admin_/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin_/students': typeof AuthenticatedAdminStudentsRoute
+  '/_authenticated/admin_/themes': typeof AuthenticatedAdminThemesRoute
+  '/_authenticated/admin_/project/$id': typeof AuthenticatedAdminProjectIdRoute
+  '/projects/$slug_/students/$studentSlug': typeof ProjectsSlugStudentsStudentSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/projects/$slug'
+    | '/admin/analytics'
+    | '/admin/create'
+    | '/admin/editor'
+    | '/admin/generation'
+    | '/admin/import'
+    | '/admin/media'
+    | '/admin/projects'
+    | '/admin/publishing'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/themes'
+    | '/admin/project/$id'
+    | '/projects/$slug/students/$studentSlug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/projects/$slug'
+    | '/admin/analytics'
+    | '/admin/create'
+    | '/admin/editor'
+    | '/admin/generation'
+    | '/admin/import'
+    | '/admin/media'
+    | '/admin/projects'
+    | '/admin/publishing'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/themes'
+    | '/admin/project/$id'
+    | '/projects/$slug/students/$studentSlug'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/admin'
+    | '/projects/$slug'
+    | '/_authenticated/admin_/analytics'
+    | '/_authenticated/admin_/create'
+    | '/_authenticated/admin_/editor'
+    | '/_authenticated/admin_/generation'
+    | '/_authenticated/admin_/import'
+    | '/_authenticated/admin_/media'
+    | '/_authenticated/admin_/projects'
+    | '/_authenticated/admin_/publishing'
+    | '/_authenticated/admin_/settings'
+    | '/_authenticated/admin_/students'
+    | '/_authenticated/admin_/themes'
+    | '/_authenticated/admin_/project/$id'
+    | '/projects/$slug_/students/$studentSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ProjectsSlugRoute: typeof ProjectsSlugRoute
+  ProjectsSlugStudentsStudentSlugRoute: typeof ProjectsSlugStudentsStudentSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +267,169 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin_/analytics': {
+      id: '/_authenticated/admin_/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/create': {
+      id: '/_authenticated/admin_/create'
+      path: '/admin/create'
+      fullPath: '/admin/create'
+      preLoaderRoute: typeof AuthenticatedAdminCreateRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/editor': {
+      id: '/_authenticated/admin_/editor'
+      path: '/admin/editor'
+      fullPath: '/admin/editor'
+      preLoaderRoute: typeof AuthenticatedAdminEditorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/generation': {
+      id: '/_authenticated/admin_/generation'
+      path: '/admin/generation'
+      fullPath: '/admin/generation'
+      preLoaderRoute: typeof AuthenticatedAdminGenerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/import': {
+      id: '/_authenticated/admin_/import'
+      path: '/admin/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AuthenticatedAdminImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/media': {
+      id: '/_authenticated/admin_/media'
+      path: '/admin/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AuthenticatedAdminMediaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/projects': {
+      id: '/_authenticated/admin_/projects'
+      path: '/admin/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AuthenticatedAdminProjectsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/publishing': {
+      id: '/_authenticated/admin_/publishing'
+      path: '/admin/publishing'
+      fullPath: '/admin/publishing'
+      preLoaderRoute: typeof AuthenticatedAdminPublishingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/settings': {
+      id: '/_authenticated/admin_/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/students': {
+      id: '/_authenticated/admin_/students'
+      path: '/admin/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AuthenticatedAdminStudentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/themes': {
+      id: '/_authenticated/admin_/themes'
+      path: '/admin/themes'
+      fullPath: '/admin/themes'
+      preLoaderRoute: typeof AuthenticatedAdminThemesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin_/project/$id': {
+      id: '/_authenticated/admin_/project/$id'
+      path: '/admin/project/$id'
+      fullPath: '/admin/project/$id'
+      preLoaderRoute: typeof AuthenticatedAdminProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/projects/$slug_/students/$studentSlug': {
+      id: '/projects/$slug_/students/$studentSlug'
+      path: '/projects/$slug/students/$studentSlug'
+      fullPath: '/projects/$slug/students/$studentSlug'
+      preLoaderRoute: typeof ProjectsSlugStudentsStudentSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminCreateRoute: typeof AuthenticatedAdminCreateRoute
+  AuthenticatedAdminEditorRoute: typeof AuthenticatedAdminEditorRoute
+  AuthenticatedAdminGenerationRoute: typeof AuthenticatedAdminGenerationRoute
+  AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
+  AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
+  AuthenticatedAdminProjectsRoute: typeof AuthenticatedAdminProjectsRoute
+  AuthenticatedAdminPublishingRoute: typeof AuthenticatedAdminPublishingRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
+  AuthenticatedAdminThemesRoute: typeof AuthenticatedAdminThemesRoute
+  AuthenticatedAdminProjectIdRoute: typeof AuthenticatedAdminProjectIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+  AuthenticatedAdminCreateRoute: AuthenticatedAdminCreateRoute,
+  AuthenticatedAdminEditorRoute: AuthenticatedAdminEditorRoute,
+  AuthenticatedAdminGenerationRoute: AuthenticatedAdminGenerationRoute,
+  AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
+  AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
+  AuthenticatedAdminProjectsRoute: AuthenticatedAdminProjectsRoute,
+  AuthenticatedAdminPublishingRoute: AuthenticatedAdminPublishingRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
+  AuthenticatedAdminThemesRoute: AuthenticatedAdminThemesRoute,
+  AuthenticatedAdminProjectIdRoute: AuthenticatedAdminProjectIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ProjectsSlugRoute: ProjectsSlugRoute,
+  ProjectsSlugStudentsStudentSlugRoute: ProjectsSlugStudentsStudentSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

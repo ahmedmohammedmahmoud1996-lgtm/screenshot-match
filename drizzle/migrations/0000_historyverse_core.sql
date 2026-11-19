@@ -1,0 +1,70 @@
+CREATE TYPE public.app_role AS ENUM ('admin');
+CREATE TABLE public.profiles (id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, display_name text NOT NULL DEFAULT 'Administrator', preferences jsonb NOT NULL DEFAULT '{}', created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, UPDATE ON public.profiles TO authenticated; GRANT ALL ON public.profiles TO service_role;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY profiles_own_read ON public.profiles FOR SELECT TO authenticated USING (id=auth.uid());
+CREATE POLICY profiles_own_update ON public.profiles FOR UPDATE TO authenticated USING (id=auth.uid()) WITH CHECK (id=auth.uid());
+CREATE TABLE public.user_roles (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE, role public.app_role NOT NULL, UNIQUE(user_id,role));
+GRANT SELECT ON public.user_roles TO authenticated; GRANT ALL ON public.user_roles TO service_role;
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY own_roles ON public.user_roles FOR SELECT TO authenticated USING (user_id=auth.uid());
+CREATE FUNCTION public.has_role(_user_id uuid,_role public.app_role) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.user_roles WHERE user_id=_user_id AND role=_role) $$;
+REVOKE ALL ON FUNCTION public.has_role(uuid,public.app_role) FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.has_role(uuid,public.app_role) TO authenticated,service_role;
+CREATE FUNCTION public.make_profile() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN INSERT INTO public.profiles(id) VALUES(NEW.id); RETURN NEW; END $$;
+CREATE TRIGGER historyverse_profile AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.make_profile();
+CREATE TABLE public.themes (id text PRIMARY KEY, name text NOT NULL, family text NOT NULL, configuration jsonb NOT NULL DEFAULT '{}');
+GRANT SELECT ON public.themes TO authenticated; GRANT ALL ON public.themes TO service_role;
+ALTER TABLE public.themes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY themes_admin ON public.themes FOR SELECT TO authenticated USING(public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.projects (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), group_code text NOT NULL, title_ar text NOT NULL, title_en text NOT NULL DEFAULT '', topic text NOT NULL, summary_ar text NOT NULL DEFAULT '', historical_period text NOT NULL DEFAULT '', geographic_focus text NOT NULL DEFAULT '', school text NOT NULL DEFAULT '', grade text NOT NULL DEFAULT '', academic_year text NOT NULL DEFAULT '', instructions text NOT NULL DEFAULT '', slug text NOT NULL UNIQUE DEFAULT gen_random_uuid()::text, theme_family text NOT NULL DEFAULT 'cinematic' CHECK(theme_family IN ('cinematic','editorial','museum')), hero_key text NOT NULL DEFAULT 'egypt', hero_path text, visibility text NOT NULL DEFAULT 'unpublished' CHECK(visibility IN ('unpublished','unlisted','public')), status text NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','review','published','archived')), illustrative boolean NOT NULL DEFAULT false, published_data jsonb, published_at timestamptz, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.projects TO authenticated; GRANT ALL ON public.projects TO service_role;
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
+CREATE POLICY projects_admin ON public.projects FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.students (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE, name_original text NOT NULL, name_ar text NOT NULL, public_display_name text NOT NULL, slug text NOT NULL DEFAULT gen_random_uuid()::text, subtopic_ar text NOT NULL, requested_slide_count integer NOT NULL DEFAULT 5 CHECK(requested_slide_count BETWEEN 3 AND 20), display_order integer NOT NULL DEFAULT 0, portrait_path text, portrait_visibility text NOT NULL DEFAULT 'avatar' CHECK(portrait_visibility IN ('show','hide','avatar')), UNIQUE(project_id,slug));
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.students TO authenticated; GRANT ALL ON public.students TO service_role;
+ALTER TABLE public.students ENABLE ROW LEVEL SECURITY;
+CREATE POLICY students_admin ON public.students FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE INDEX students_project ON public.students(project_id);
+CREATE TABLE public.presentations (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), student_id uuid NOT NULL UNIQUE REFERENCES public.students(id) ON DELETE CASCADE, review_status text NOT NULL DEFAULT 'draft', version integer NOT NULL DEFAULT 1);
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.presentations TO authenticated; GRANT ALL ON public.presentations TO service_role;
+ALTER TABLE public.presentations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY presentations_admin ON public.presentations FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.media_assets (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), project_id uuid REFERENCES public.projects(id) ON DELETE CASCADE, storage_path text NOT NULL, source_url text NOT NULL DEFAULT '', attribution text NOT NULL DEFAULT '', license text NOT NULL DEFAULT '', alt_text_ar text NOT NULL DEFAULT '', ai_generated boolean NOT NULL DEFAULT false, review_status text NOT NULL DEFAULT 'pending');
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.media_assets TO authenticated; GRANT ALL ON public.media_assets TO service_role;
+ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
+CREATE POLICY media_admin ON public.media_assets FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE INDEX media_project ON public.media_assets(project_id);
+CREATE TABLE public.slides (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), presentation_id uuid NOT NULL REFERENCES public.presentations(id) ON DELETE CASCADE, slide_order integer NOT NULL DEFAULT 0, title_ar text NOT NULL DEFAULT '', body_ar text NOT NULL DEFAULT '', speaker_notes_ar text NOT NULL DEFAULT '', layout text NOT NULL DEFAULT 'split' CHECK(layout IN ('split','statement','spotlight','image')), image_path text, image_subject text NOT NULL DEFAULT '', image_source_url text NOT NULL DEFAULT '', image_attribution text NOT NULL DEFAULT '', image_license text NOT NULL DEFAULT '', image_review text NOT NULL DEFAULT 'pending', review_status text NOT NULL DEFAULT 'draft', ai_generated boolean NOT NULL DEFAULT false, image_position text NOT NULL DEFAULT 'center', versions jsonb NOT NULL DEFAULT '[]');
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.slides TO authenticated; GRANT ALL ON public.slides TO service_role;
+ALTER TABLE public.slides ENABLE ROW LEVEL SECURITY;
+CREATE POLICY slides_admin ON public.slides FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE INDEX slides_presentation ON public.slides(presentation_id);
+CREATE TABLE public.source_references (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE, title text NOT NULL, url text NOT NULL, verified boolean NOT NULL DEFAULT false);
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.source_references TO authenticated; GRANT ALL ON public.source_references TO service_role;
+ALTER TABLE public.source_references ENABLE ROW LEVEL SECURITY;
+CREATE POLICY sources_admin ON public.source_references FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE INDEX sources_project ON public.source_references(project_id);
+CREATE TABLE public.audit_logs (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), admin_id uuid NOT NULL, action text NOT NULL, entity_id uuid, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT ON public.audit_logs TO authenticated; GRANT ALL ON public.audit_logs TO service_role;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY audit_read ON public.audit_logs FOR SELECT TO authenticated USING(public.has_role(auth.uid(),'admin'));
+CREATE POLICY audit_insert ON public.audit_logs FOR INSERT TO authenticated WITH CHECK(admin_id=auth.uid() AND public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.generation_jobs (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), project_id uuid REFERENCES public.projects(id) ON DELETE CASCADE, status text NOT NULL DEFAULT 'queued', kind text NOT NULL, progress jsonb NOT NULL DEFAULT '{}', created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.generation_jobs TO authenticated; GRANT ALL ON public.generation_jobs TO service_role;
+ALTER TABLE public.generation_jobs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY jobs_admin ON public.generation_jobs FOR SELECT TO authenticated USING(public.has_role(auth.uid(),'admin'));
+CREATE INDEX jobs_project ON public.generation_jobs(project_id);
+CREATE FUNCTION public.public_project(project_slug text) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT published_data FROM public.projects WHERE slug=project_slug AND status='published' AND visibility IN ('public','unlisted') $$;
+REVOKE ALL ON FUNCTION public.public_project(text) FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.public_project(text) TO anon,authenticated,service_role;
+CREATE POLICY media_storage_admin ON storage.objects FOR ALL TO authenticated USING(bucket_id='project-media' AND public.has_role(auth.uid(),'admin')) WITH CHECK(bucket_id='project-media' AND public.has_role(auth.uid(),'admin'));
+INSERT INTO public.themes(id,name,family) VALUES('cinematic','Cinematic Exhibition','cinematic'),('editorial','Editorial Archive','editorial'),('museum','Digital Museum','museum');
+INSERT INTO public.projects(id,group_code,title_ar,title_en,topic,summary_ar,historical_period,geographic_focus,theme_family,hero_key,illustrative) VALUES
+('10000000-0000-4000-8000-000000000001','Group 01','الحضارة المصرية القديمة','Ancient Egyptian Civilization','الحضارة المصرية القديمة','مشروع توضيحي يستكشف حضارة مصر القديمة من خلال العمارة والحياة اليومية والعلوم. هذا المحتوى نموذج تعليمي وليس بحثًا تاريخيًا موثقًا.','Ancient history','Egypt','cinematic','egypt',true),
+('10000000-0000-4000-8000-000000000002','Group 02','الثورة الصناعية','The Industrial Revolution','الثورة الصناعية','مشروع توضيحي يتناول التحولات الصناعية وتأثيرها في المجتمع والإنتاج. هذا المحتوى نموذج تعليمي يحتاج إلى مراجعة المصادر.','18th–19th century','Great Britain','editorial','industrial',true),
+('10000000-0000-4000-8000-000000000003','Group 03','العصر الذهبي للحضارة الإسلامية','The Islamic Golden Age','العصر الذهبي للحضارة الإسلامية','مشروع توضيحي عن المعرفة والعلوم في الحضارة الإسلامية. هذا المحتوى نموذج تعليمي وليس بحثًا تاريخيًا موثقًا.','Medieval history','Middle East','museum','golden-age',true);
+INSERT INTO public.students(project_id,name_original,name_ar,public_display_name,subtopic_ar,requested_slide_count,display_order) VALUES
+('10000000-0000-4000-8000-000000000001','Ahmed','أحمد','أحمد','بناء الأهرامات',5,0),('10000000-0000-4000-8000-000000000001','Sara','سارة','سارة','الحياة اليومية',8,1),('10000000-0000-4000-8000-000000000001','Omar','عمر','عمر','الملوك والفراعنة',12,2),('10000000-0000-4000-8000-000000000001','Laila','ليلى','ليلى','الدين والمعتقدات',6,3),('10000000-0000-4000-8000-000000000001','Youssef','يوسف','يوسف','العلوم والاختراعات',7,4),
+('10000000-0000-4000-8000-000000000002','Khaled','خالد','خالد','الآلة البخارية',7,0),('10000000-0000-4000-8000-000000000002','Mariam','مريم','مريم','تطور المصانع',9,1),('10000000-0000-4000-8000-000000000002','Ali','علي','علي','وسائل النقل',5,2),('10000000-0000-4000-8000-000000000002','Hana','هناء','هناء','الحياة الاجتماعية',8,3),('10000000-0000-4000-8000-000000000002','Ziad','زياد','زياد','الاختراعات',6,4),
+('10000000-0000-4000-8000-000000000003','Nour','نور','نور','علم الفلك',6,0),('10000000-0000-4000-8000-000000000003','Salma','سلمى','سلمى','الطب',10,1),('10000000-0000-4000-8000-000000000003','Hassan','حسن','حسن','الرياضيات',8,2),('10000000-0000-4000-8000-000000000003','Dina','دينا','دينا','المكتبات والترجمة',5,3),('10000000-0000-4000-8000-000000000003','Adam','آدم','آدم','العمارة',7,4);
+INSERT INTO public.presentations(student_id) SELECT id FROM public.students;
+INSERT INTO public.slides(presentation_id,slide_order,title_ar,body_ar,layout) SELECT p.id,0,s.subtopic_ar,'هذا نموذج توضيحي لمقدمة العرض. أضف المحتوى التاريخي المدقق والمصادر المناسبة لهذا الموضوع قبل اعتماد الشرائح ونشر المشروع.','statement' FROM public.presentations p JOIN public.students s ON s.id=p.student_id;
