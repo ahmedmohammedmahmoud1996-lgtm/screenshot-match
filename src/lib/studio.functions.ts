@@ -3,7 +3,7 @@ import {requireSupabaseAuth} from '@/integrations/supabase/auth-middleware';
 import {createClient} from '@supabase/supabase-js';
 import {z} from 'zod';
 import {publicationErrors,validateSlideCount,type Project,type Student,type Slide} from './studio';
-async function assertAdministrator(context:{supabase: {rpc: (name:string,args: {_user_id:string;_role:'admin'})=>PromiseLike<{data:boolean|null;error:unknown}>};userId:string}){
+async function assertAdministrator(context:{supabase:any;userId:string}){
  const {data:admin,error}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
  if(error||!admin)throw new Error('Administrator access required.');
 }
