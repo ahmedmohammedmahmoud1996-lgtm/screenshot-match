@@ -10,4 +10,5 @@
 - Deferred Phase 2: AI outlines, slide generation, subject-matched imagery, sources, and regeneration.
 - Deferred Phase 3: eight design families, twelve palettes, and expanded design controls.
 - Deferred Phase 4: bulk imports, durable generation jobs, sharing/QR codes, and real analytics.
-- [ ] Follow-up Phase 1 completeness: wizard autosave, richer sample decks with individually sourced images, source editing, full project duplication/deletion, and expanded preference controls; current prototype uses explicit saves and clearly marked starter slides.
+- [x] Follow-up Phase 1: wizard draft autosave (on device), full project duplication with slides, confirmed deletion, and source editing.
+- [ ] Richer sample decks with individually sourced images (needs real verified sources; not fabricated).
