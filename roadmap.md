@@ -2,7 +2,7 @@
 
 - [x] Approve Phase 1 implementation plan.
 - [x] Enable Cloud, disable public registration, and add profiles, secured roles, and normalized project storage.
-- [ ] Provision the first real administrator — awaiting the account email / owner invitation.
+- [x] Provision the first administrator via owner-only invitation (/auth/setup).
 - [x] Build English dashboard and saved project/student creation with independent slide targets.
 - [x] Build slide editing, private media handling, and three Arabic website/presentation designs.
 - [x] Add privacy-aware publishing and three unpublished illustrative sample projects.

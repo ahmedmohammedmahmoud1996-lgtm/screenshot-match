@@ -15,6 +15,13 @@
       "when": 1795094938703,
       "tag": "0001_harden_functions_and_publication",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795098488944,
+      "tag": "0002_bootstrap_first_admin",
+      "breakpoints": true
     }
   ]
 }

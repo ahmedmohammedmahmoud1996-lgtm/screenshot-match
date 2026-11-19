@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthSetupRouteImport } from './routes/auth_.setup'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin_.analytics'
 import { Route as AuthenticatedAdminCreateRouteImport } from './routes/_authenticated/admin_.create'
@@ -46,6 +47,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthSetupRoute = AuthSetupRouteImport.update({
+  id: '/auth_/setup',
+  path: '/auth/setup',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   id: '/projects/$slug',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/auth/setup': typeof AuthSetupRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/create': typeof AuthenticatedAdminCreateRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/auth/setup': typeof AuthSetupRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/create': typeof AuthenticatedAdminCreateRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/auth_/setup': typeof AuthSetupRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/_authenticated/admin_/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin_/create': typeof AuthenticatedAdminCreateRoute
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/auth/setup'
     | '/projects/$slug'
     | '/admin/analytics'
     | '/admin/create'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/auth/setup'
     | '/projects/$slug'
     | '/admin/analytics'
     | '/admin/create'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/auth_/setup'
     | '/projects/$slug'
     | '/_authenticated/admin_/analytics'
     | '/_authenticated/admin_/create'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  AuthSetupRoute: typeof AuthSetupRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
   ProjectsSlugStudentsStudentSlugRoute: typeof ProjectsSlugStudentsStudentSlugRoute
 }
@@ -287,6 +300,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/auth_/setup': {
+      id: '/auth_/setup'
+      path: '/auth/setup'
+      fullPath: '/auth/setup'
+      preLoaderRoute: typeof AuthSetupRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projects/$slug': {
       id: '/projects/$slug'
@@ -428,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  AuthSetupRoute: AuthSetupRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
   ProjectsSlugStudentsStudentSlugRoute: ProjectsSlugStudentsStudentSlugRoute,
 }
