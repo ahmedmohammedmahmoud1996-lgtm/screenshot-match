@@ -3,18 +3,18 @@ import {requireSupabaseAuth} from '@/integrations/supabase/auth-middleware';
 import {createClient} from '@supabase/supabase-js';
 import {z} from 'zod';
 import {publicationErrors,validateSlideCount,type Project,type Student,type Slide} from './studio';
-async function assertAdministrator(context:{supabase:any;userId:string}){
+async function assertAdministrator(context:{supabase: {rpc: (name:string,args: {_user_id:string;_role:'admin'})=>PromiseLike<{data:boolean|null;error:unknown}>};userId:string}){
  const {data:admin,error}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
  if(error||!admin)throw new Error('Administrator access required.');
 }
 export const loadWorkspace=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
- const {data:admin}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(!admin)throw new Error('Administrator access has not been granted. Ask the project owner to invite and authorize your account.');
+ await assertAdministrator(context);
  const [{data:projects,error},{data:students},{data:presentations},{data:slides},{data:profile},{data:jobs}]=await Promise.all([context.supabase.from('projects').select('*').order('updated_at',{ascending:false}),context.supabase.from('students').select('*').order('display_order'),context.supabase.from('presentations').select('*'),context.supabase.from('slides').select('*').order('slide_order'),context.supabase.from('profiles').select('*').eq('id',context.userId).single(),context.supabase.from('generation_jobs').select('*')]);if(error)throw error;
  return {profile:profile?{display_name:profile.display_name}:null, jobs:(jobs??[]).map(j=>({id:j.id,status:j.status,kind:j.kind})), projects:(projects??[]).map(p=>({...p,students:(students??[]).filter(s=>s.project_id===p.id).map(s=>{const deck=presentations?.find(d=>d.student_id===s.id);return {...s,presentation_id:deck?.id,slides:(slides??[]).filter(sl=>sl.presentation_id===deck?.id)}})})) as unknown as Project[]};
 });
 const projectInput=z.object({id:z.string().uuid(),group_code:z.string().min(1),title_ar:z.string().min(1),title_en:z.string(),topic:z.string().min(1),summary_ar:z.string(),historical_period:z.string(),geographic_focus:z.string(),school:z.string(),grade:z.string(),academic_year:z.string(),instructions:z.string(),slug:z.string().min(1),theme_family:z.enum(['cinematic','editorial','museum']),hero_key:z.string(),hero_path:z.string().nullable(),visibility:z.enum(['unpublished','unlisted','public']),status:z.enum(['draft','review','published','archived']),illustrative:z.boolean(),students:z.array(z.object({id:z.string().uuid(),name_original:z.string().min(1),name_ar:z.string().min(1),public_display_name:z.string().min(1),slug:z.string(),subtopic_ar:z.string().min(1),requested_slide_count:z.number().int().min(3).max(20),display_order:z.number().int(),portrait_path:z.string().nullable(),portrait_visibility:z.enum(['show','hide','avatar'])}))});
 export const saveProject=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator((input:Project)=>projectInput.parse(input)).handler(async({data,context})=>{
-const {data:admin}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(!admin)throw new Error('Forbidden');const {students,...project}=data;
+await assertAdministrator(context);const {students,...project}=data;
 const {error}=await context.supabase.from('projects').upsert({...project,updated_at:new Date().toISOString(),status:project.status==='published'?'review':project.status,visibility:'unpublished',published_data:null});if(error)throw error;
 for(const s of students){validateSlideCount(s.requested_slide_count);const {error:e}=await context.supabase.from('students').upsert({...s,project_id:project.id});if(e)throw e;const {error:d}=await context.supabase.from('presentations').upsert({student_id:s.id},{onConflict:'student_id',ignoreDuplicates:true});if(d)throw d;}
 await context.supabase.from('audit_logs').insert({admin_id:context.userId,action:'save_project',entity_id:project.id});return project.id;
