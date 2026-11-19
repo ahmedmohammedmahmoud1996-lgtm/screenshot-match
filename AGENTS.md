@@ -36,4 +36,4 @@ use the editor.
 - Publish a sanitized reviewed snapshot through the public project RPC, not raw private tables; content edits withdraw publication until renewed review.
 - Keep uploaded images in private storage and authorize public signed links against the current published snapshot; never sign arbitrary caller-supplied paths.
 - Use a single 1920×1080 scaled presentation canvas for previews and public decks; slide selection is URL-driven.
-- AI slide and image generation runs through admin-checked server functions, one call per step, and always saves drafts for manual approval; analytics stay deferred.
+- AI slide writing plus real Wikimedia Commons photos (open licenses only, AI illustration fallback) run through admin-checked server functions, one call per step, and always saves drafts for manual approval; analytics stay deferred.

@@ -8,6 +8,7 @@
 - [x] Add privacy-aware publishing and three unpublished illustrative sample projects.
 - [x] Verify security rules, slide preservation, and signed-in creation-to-publication flow.
 - [x] Phase 2 (core): paste student list, AI-written Arabic slides and AI images per slide, kept as drafts for approval.
+- [x] Real photos from Wikimedia Commons (open licenses, credited), AI illustration only as fallback.
 - Deferred Phase 3: eight design families, twelve palettes, and expanded design controls.
 - Deferred Phase 4: bulk imports, durable generation jobs, sharing/QR codes, and real analytics.
 - [x] Follow-up Phase 1: wizard draft autosave (on device), full project duplication with slides, confirmed deletion, and source editing.
